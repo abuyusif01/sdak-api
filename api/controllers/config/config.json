@@ -1,0 +1,5 @@
+{
+    "port": 8883,
+    "host": "localhost",
+    "rejectUnauthorized": false
+}

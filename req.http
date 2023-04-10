@@ -1,0 +1,215 @@
+@contentType = application/json
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjgxMTQ2MjU0LCJleHAiOjE2ODEyMzI2NTR9.IVulsH10LrYlE9NmOgwhlW0hU21xUs7ohaOgcKVTuIM
+@userToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjgxMTQ5MjA4LCJleHAiOjE2ODEyMzU2MDh9.bIRVcrs-gkg25Geq8rhh8sK3krTD6oyxeXlsl78Akhk
+@modToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjgxMTE3NTU2LCJleHAiOjE2ODEyMDM5NTZ9.FWSGOflxivGKLX5jldzZv5dWEdCxml0rKVoGgoFDDx8
+
+# create user
+POST https://localhost:8081/api/register HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "email": "admin@gmail.com",
+    "password": "test",
+    "role": "admin"
+}
+
+###
+
+# create user
+POST https://localhost:8081/api/register HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "email": "user@gmail.com",
+    "password": "test",
+    "role": "user"
+}
+
+
+###
+
+# create user
+POST https://localhost:8081/api/register HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "email": "mod@gmail.com",
+    "password": "test",
+    "role": "mod"
+}
+
+
+###
+
+
+# login
+POST https://localhost:8081/api/login HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "email": "user@gmail.com",
+    "password": "test"
+}
+
+###
+
+# test user permission
+GET https://localhost:8081/api/test/user HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{modToken}}
+
+###
+
+GET https://localhost:8081/api/test/mod HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{modToken}}
+
+###
+
+GET https://localhost:8081/api/test/admin HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{userToken}}
+###
+
+# get all doors
+
+GET https://localhost:8081/api/getAllDoors HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+
+###
+
+# create new door
+
+POST https://localhost:8081/api/addDoor HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "doorLocation": "KICT-CITA-LAB-004"  
+}
+
+
+###
+
+#remove door
+
+POST https://localhost:8081/api/removeDoor HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "doorId": "3"
+}
+
+###
+
+# giver permission to user
+
+POST https://localhost:8081/api/giveAccess HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "doorId": "4",
+    "userId": "3"
+}
+
+
+###
+
+# revoke user permission
+
+POST https://localhost:8081/api/revokeAccess HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "doorId": "4",
+    "userId": "1"
+}
+
+
+
+### 
+
+# open door
+
+POST https://localhost:8081/api/openDoor HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "userId": 1,
+    "doorId": "5"
+}
+
+
+###
+
+# close door
+POST https://localhost:8081/api/closeDoor HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+    
+{
+    "userId": 1,
+    "doorId": "6"
+}
+
+###
+
+# update userinfo
+
+POST https://localhost:8081/api/updateUserInfo HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "userId": 1,
+    "email": "new@test.com",
+    "password": "1234"
+}
+
+
+###
+
+# get all doors with access
+
+GET https://localhost:8081/api/getAllDoorsWithAccess HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "userId": 1
+}
+
+
+###
+
+# get all doors with access
+
+GET https://localhost:8081/api/getAllUserDoorsWithAccess HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "userId": 3
+}
+
+
+###
+
+# upddate info
+
+POST https://localhost:8081/api/updateInfo HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{userToken}}
+
+{
+    "userId": 3,
+    "email": "update@gmail.com",
+    "password": "1234",
+    "role": "admin"
+}
