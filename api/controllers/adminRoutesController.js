@@ -6,26 +6,31 @@ var bcrypt = require("bcryptjs");
  * 
  * @param {*} req 
  * @param {*} res 
+ * @description
+ * API Controller to retrieve all doors in the database
  * 
  * function to get all doors in the database
  */
 exports.getAllDoors = (req, res) => {
     Door.findAll().then(doors => {
-        res.send(doors);
+        res.send({ doors: doors });
     });
-}
+};
 
 /**
- * add a new door to the list of doors in the database
+ * @param {*} req 
+ * @param {*} res 
+ * @description
+ * API Controller to add a new door in the database
  * Only admins can add doors. return the newly created doorId
  * 
- * params: doorId, doorLocation
+ * params: doorId, doorLocation, doorName
 */
 exports.addDoor = (req, res) => {
 
     // check if door already exists
     Door.findOne({
-        where: { doorLocation: req.body.doorLocation }
+        where: { doorName: req.body.doorName }
     }).then(door => {
         if (door) {
             return res.status(400).send({
@@ -35,23 +40,27 @@ exports.addDoor = (req, res) => {
         }
         else {
             // create a new door
-            Door.create({ doorLocation: req.body.doorLocation }).then((door) => {
+            Door.create({ doorName: req.body.doorName, doorLocation: req.body.doorLocation }).then((door) => {
                 res.send({
                     message: "Door added successfully!",
-                    doorId: door.doorId
+                    doorId: door.doorId,
+                    doorName: door.doorName,
+                    doorLocation: door.doorLocation
                 });
             });
         }
     });
-}
+};
 
 /**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @description
  * remove a door from the list of doors in the database
- * Only admins can remove doors
+ * Only admins can remove doors. this will also remove all permissions associated with this door
  * 
  * params: doorId
- * 
- * this will remove all permissions associated with this door
  */
 exports.removeDoor = (req, res) => {
 
@@ -77,16 +86,16 @@ exports.removeDoor = (req, res) => {
             });
         }
     });
-}
+};
 
 /**
  * 
  * @param {*} req 
  * @param {*} res 
+ * @description API Controller to give user a permission to access a door
  * 
  * params: userId, doorId
  * 
- * give user a permission to access a door
  */
 exports.giveAccess = (req, res) => {
 
@@ -135,17 +144,17 @@ exports.giveAccess = (req, res) => {
             });
         }
     });
-}
+};
 
 
 /**
  * 
  * @param {*} req 
  * @param {*} res 
+ * @description API controller revoke users access to a door
  * 
  * params: userId, doorId
  * 
- * revoke users access to a door
  */
 exports.revokeAccess = (req, res) => {
 
@@ -186,12 +195,13 @@ exports.revokeAccess = (req, res) => {
             });
         });
     });
-}
+};
 
 /**
  * 
  * @param {*} req 
  * @param {*} res
+ * @description API Controller for admin to update any user's role
  * 
  * params: userId, role 
  */
@@ -232,16 +242,15 @@ exports.updateRole = (req, res) => {
             });
         }
     });
-}
+};
 
 /**
  * 
  * @param {*} req 
  * @param {*} res 
+ * @description API Controller to return all doors that a user has access to (only admin can access this route)
  * 
  * params: userId
- * 
- * return all doors that a user has access to (only admin can access this route)
  */
 exports.getAllUserDoorsWithAccess = (req, res) => {
 
@@ -263,10 +272,9 @@ exports.getAllUserDoorsWithAccess = (req, res) => {
  * 
  * @param {*} req 
  * @param {*} res 
+ * @description API Controller to update any user info (only admin can access this route)
  * 
  * params: userId, emial, password, role
- * 
- * update any user info (only admin can access this route)
  */
 exports.updateInfo = (req, res) => {
 

@@ -4,7 +4,7 @@
  * @param {DataTypes} DataTypes 
  * @returns 
  * 
- * Door model -> doorId(pk), location
+ * Door model -> doorId(pk), doorLocation, doorName
  */
 
 module.exports = (sequelize, DataTypes) => {
@@ -15,13 +15,21 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             allowNull: false
         },
-        doorLocation: {
+        doorName: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,
             validate: {
                 notEmpty: true
-                
+
+            }
+        },
+        doorLocation: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: false,
+            validate: {
+                notEmpty: true
             }
         }
     });

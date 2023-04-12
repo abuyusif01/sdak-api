@@ -34,13 +34,13 @@ exports.signup = (req, res) => {
     } else {
         res.status(400).send({ message: "No role provided" });
     }
-}
+};
 
 
 /**
  * 
  * @param {*} req 
- * @param {*} res 
+ * @param {*} res
  * @returns void
  * 
  * route to login a user
