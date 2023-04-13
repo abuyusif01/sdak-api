@@ -1,4 +1,4 @@
-const { User, Door, Permission } = require("../../models");
+const { User, Door, Permission, Passcode } = require("../../models");
 var bcrypt = require("bcryptjs");
 const { validateAlphanumeric } = require("./utils/validator");
 
@@ -115,7 +115,7 @@ exports.removeDoor = (req, res) => {
  */
 exports.giveAccess = (req, res) => {
 
-    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.userId.toString(), req.body.permissionId.toString())) {
+    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.userId.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -182,7 +182,7 @@ exports.revokeAccess = (req, res) => {
      * Validate user input
      * forcing a toString method will insure everything will be treated as a string
      */
-    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.userId.toString(), req.body.permissionId.toString())) {
+    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.userId.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -323,9 +323,10 @@ exports.updateInfo = (req, res) => {
     /**
      * User validation
      */
-    if (!validateAlphanumeric(req.body.doorId.toString())) {
+    if (!validateAlphanumeric(req.body.userId.toString(), req.body.email.toString(), req.body.password.toString(), req.body.role.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
+
     User.findOne({
         where: { userId: req.body.userId }
     }).then(user => {
@@ -353,6 +354,109 @@ exports.updateInfo = (req, res) => {
         }
     });
 };
+
+/**
+ * 
+ * @param {*} req
+ * @param {*} res
+ * @description API Controller to add a passcode to a door (only admin can access this route)
+ * 
+ * params: doorId, doorPasscode
+ * 
+ * @returns doorId, doorPasscode
+ * 
+ */
+exports.addDoorPasscode = (req, res) => {
+
+    /**
+     * User validation
+     */
+    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.doorPasscode.toString())) {
+        return res.status(400).send({ message: "Invalid user input" })
+    }
+
+    Door.findOne({
+        where: { doorId: req.body.doorId }
+    }).then(door => {
+        if (!door) {
+            return res.status(404).send({
+                message: "Door Not found.",
+                doorId: req.body.doorId
+            });
+        }
+
+        Passcode.findOne({
+            where: { doorId: door.doorId }
+        }).then(passcode => {
+            if (passcode) {
+                return res.status(400).send({
+                    message: "Door already have a passcode.",
+                    doorId: door.doorId,
+                    doorPasscode: passcode.doorPasscode
+                });
+            }
+            Passcode.create({
+                doorPasscode: req.body.doorPasscode,
+                doorId: door.doorId
+            }).then(() => {
+                res.send({
+                    message: "Passcode added successfully!",
+                    doorId: door.doorId,
+                    doorPasscode: req.body.passcode
+                });
+            });
+        });
+    });
+};
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns doorId, doorPasscode
+ * 
+ * @description API Controller to revoke a door's passcode (only admin can access this route)
+ * 
+ */
+exports.revokeDoorPasscode = (req, res) => {
+
+    /**
+     * User validation
+     */
+    if (!validateAlphanumeric(req.body.doorId.toString())) {
+        return res.status(400).send({ message: "Invalid user input" })
+    }
+
+    Door.findOne({
+        where: { doorId: req.body.doorId }
+    }).then(door => {
+        if (!door) {
+            return res.status(404).send({
+                message: "Door Not found.",
+                doorId: req.body.doorId
+            });
+        }
+
+        Passcode.findOne({
+            where: { doorId: door.doorId }
+        }).then(passcode => {
+            if (!passcode) {
+                return res.status(400).send({
+                    message: "Door doesn't have a passcode.",
+                    doorId: door.doorId
+                });
+            }
+            passcode.destroy().then(() => {
+                res.send({
+                    message: "Passcode revoked successfully!",
+                    doorId: door.doorId
+                });
+            });
+        });
+    });
+}
+
+
 
 /**
  * 

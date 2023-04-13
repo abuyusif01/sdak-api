@@ -1,5 +1,5 @@
 @contentType = application/json
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjgxMjg1NjQ3LCJleHAiOjE2ODEzNzIwNDd9.lEVjTkFsCImlLmO7ZkESrq0iTnLsh3u7n2MgLMnJoFk
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjgxNDEwNDI1LCJleHAiOjE2ODE0OTY4MjV9.j4E8w6KoelT2Awy11-y28MKTMtxcNWVRFv8yTYg36kg
 @userToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjgxMzIzNzA0LCJleHAiOjE2ODE0MTAxMDR9.2dkY_z3SbEXBkBewehVcoxpH438gJFNFfEpXHOgnqh4
 @modToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjgxMTE3NTU2LCJleHAiOjE2ODEyMDM5NTZ9.FWSGOflxivGKLX5jldzZv5dWEdCxml0rKVoGgoFDDx8
 
@@ -127,7 +127,7 @@ Content-Type: {{contentType}}
 x-access-token: {{token}}
 
 {
-    "doorId": "4",
+    "doorId": "8",
     "userId": "1"
 }
 
@@ -171,7 +171,8 @@ x-access-token: {{token}}
 {
     "userId": 1,
     "email": "new@test.com",
-    "password": "1234"
+    "password": "1234",
+    "role": "admin"
 }
 
 
@@ -207,7 +208,7 @@ x-access-token: {{token}}
 
 POST https://localhost:8081/api/updateInfo HTTP/1.1
 Content-Type: {{contentType}}
-x-access-token: {{userToken}}
+x-access-token: {{token}}
 
 {
     "userId": 3,
@@ -215,3 +216,45 @@ x-access-token: {{userToken}}
     "password": "1234",
     "role": "admin"
 }
+
+
+###
+
+# add door passcode
+POST https://localhost:8081/api/addDoorPasscode HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "doorId": 1,
+    "doorPasscode": "1234"
+}
+
+
+###
+
+# remove door passcode
+
+POST https://localhost:8081/api/revokeDoorPasscode HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "doorId": 1
+}
+
+
+###
+
+# adduser to permission with code
+
+POST https://localhost:8081/api/addDoorWithPasscode HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "userId": 1,
+    "doorId": 10,
+    "doorPasscode": "1234"
+}
+

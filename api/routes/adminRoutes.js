@@ -36,4 +36,11 @@ module.exports = function (app) {
 
     // get all doors with access
     app.get("/api/getAllUserDoorsWithAccess", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllUserDoorsWithAccess);
+
+    //add doorPasscode
+    app.post("/api/addDoorPasscode", [authJwt.verifyToken, authJwt.isAdmin], controller.addDoorPasscode);
+
+    // remove doorPasscode
+    app.post("/api/revokeDoorPasscode", [authJwt.verifyToken, authJwt.isAdmin], controller.revokeDoorPasscode);
+
 }

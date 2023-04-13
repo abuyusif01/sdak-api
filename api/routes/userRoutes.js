@@ -27,4 +27,7 @@ module.exports = function (app) {
 
     // get all doors with access
     app.get("/api/getAllDoorsWithAccess", [authJwt.verifyToken], controller.getAllDoorsWithAccess);
+
+    // add door with passcode
+    app.post("/api/addDoorWithPasscode", [authJwt.verifyToken], controller.addDoorWithPasscode);
 };

@@ -1,8 +1,9 @@
 const { port, host, rejectUnauthorized } = require('./config/config.json');
 const { validateAlphanumeric } = require('./utils/validator')
-const { User, Door, Permission } = require("../../models");
+const { User, Door, Permission, Passcode } = require("../../models");
 const mqtt = require('mqtt');
 var bcrypt = require("bcryptjs");
+const permission = require('../../models/permission');
 
 const options = {
     port: port,
@@ -90,7 +91,7 @@ exports.openDoor = (req, res) => {
                 });
             });
         });
-    })
+    });
 };
 
 /**
@@ -165,7 +166,7 @@ exports.closeDoor = (req, res) => {
                 });
             });
         });
-    })
+    });
 };
 
 /**
@@ -213,24 +214,24 @@ exports.updateUserInfo = (req, res) => {
     });
 };
 
-
 /**
  * 
  * @param {*} req 
  * @param {*} res 
+ * @params userId
+ * 
  * @description API controller to get all doors the current user have access to
  * 
- * params: userId
  */
 exports.getAllDoorsWithAccess = (req, res) => {
 
     if (!validateAlphanumeric(req.body.userId.toString())) {
-        return res.status(400).send({ message: "Invalid user ID", })
+        return res.status(400).send({ message: "Invalid user input.", })
     }
 
     if (req.userId !== req.body.userId) {
         return res.status(403).send({
-            message: "Invalid user",
+            message: "Invalid user.",
             userId: req.body.userId
         });
     }
@@ -244,6 +245,7 @@ exports.getAllDoorsWithAccess = (req, res) => {
                 userId: req.body.userId
             });
         }
+
         Permission.findAll({
             where: { userId: user.userId },
             include: [{
@@ -258,7 +260,89 @@ exports.getAllDoorsWithAccess = (req, res) => {
                     userId: user.userId
                 });
             }
-            res.send(permissions);
+            res.send({ doors: permissions });
+        });
+    });
+};
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns doorId
+ * 
+ * @description API controller to add door to the permission table for the user by providing valid passcode
+ * first we check if the user exist, then we check if the door exist, then we check if the passcode is valid
+ * if all are true, we add the door to the permission table
+ */
+exports.addDoorWithPasscode = (req, res) => {
+
+    if (!validateAlphanumeric(req.body.userId.toString(), req.body.doorId.toString(), req.body.doorPasscode.toString())) {
+        return res.status(400).send({ message: "Invalid user input.", })
+    }
+
+    if (req.userId !== req.body.userId) {
+        return res.status(403).send({
+            message: "Invalid user.",
+            userId: req.body.userId
+        });
+    }
+
+    User.findOne({
+        where: { userId: req.body.userId }
+    }).then(user => {
+        if (!user) {
+            return res.status(404).send({
+                message: "User Not found.",
+                userId: req.body.userId
+            });
+        }
+        Door.findOne({
+            where: { doorId: req.body.doorId }
+        }).then(door => {
+
+            if (!door) {
+                return res.status(404).send({
+                    message: "Door Not found.",
+                    doorId: req.body.doorId
+                });
+            }
+
+            Passcode.findOne({
+                where: {
+                    doorId: door.doorId,
+                    doorPasscode: req.body.doorPasscode
+                }
+            }).then(passcode => {
+                if (!passcode) {
+                    return res.status(404).send({
+                        message: "Passcode Not valid.",
+                        doorId: req.body.doorId
+                    });
+                }
+              
+                Permission.findOne({
+                    where: { userId: user.userId, doorId: door.doorId }
+                }).then(permission => {
+                    if (permission) {
+                        return res.status(404).send({
+                            message: "Permission already exist.",
+                            userId: user.userId,
+                            doorId: door.doorId
+                        });
+                    }
+                    Permission.create({
+                        userId: user.userId,
+                        doorId: door.doorId
+                    }).then(() => {
+                        res.send({
+                            message: "Door added successfully!",
+                            userId: user.userId,
+                            doorId: door.doorId
+                        });
+                    });
+                });
+            });
         });
     });
 };
