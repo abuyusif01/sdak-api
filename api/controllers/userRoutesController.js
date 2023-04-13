@@ -3,7 +3,6 @@ const { validateAlphanumeric } = require('./utils/validator')
 const { User, Door, Permission } = require("../../models");
 const mqtt = require('mqtt');
 var bcrypt = require("bcryptjs");
-const alphanumericPattern = /^[a-zA-Z0-9]+$/;
 
 const options = {
     port: port,

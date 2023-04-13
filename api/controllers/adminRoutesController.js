@@ -1,5 +1,7 @@
 const { User, Door, Permission } = require("../../models");
 var bcrypt = require("bcryptjs");
+const { validateAlphanumeric } = require("./utils/validator");
+
 
 
 /**
@@ -27,6 +29,10 @@ exports.getAllDoors = (req, res) => {
  * params: doorId, doorLocation, doorName
 */
 exports.addDoor = (req, res) => {
+
+    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.doorId.toString(), req.body.doorLocation.toString())) {
+        return res.status(400).send({ message: "Invalid user input" })
+    }
 
     // check if door already exists
     Door.findOne({
@@ -64,6 +70,13 @@ exports.addDoor = (req, res) => {
  */
 exports.removeDoor = (req, res) => {
 
+    /**
+     * This act like a middleware, we make sure the input is sanitize to avoid SQLi
+     */
+    if (!validateAlphanumeric(req.body.doorId.toString())) {
+        return res.status(400).send({ message: "Invalid user input" })
+    }
+
     Door.findOne({
         where: { doorId: req.body.doorId }
     }).then(door => {
@@ -98,6 +111,10 @@ exports.removeDoor = (req, res) => {
  * 
  */
 exports.giveAccess = (req, res) => {
+
+    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.userId.toString(), req.body.permissionId.toString())) {
+        return res.status(400).send({ message: "Invalid user input" })
+    }
 
     // check if the permission already exists
     Permission.findOne({
@@ -158,6 +175,14 @@ exports.giveAccess = (req, res) => {
  */
 exports.revokeAccess = (req, res) => {
 
+    /**
+     * Validate user input
+     * forcing a toString method will insure everything will be treated as a string
+     */
+    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.userId.toString(), req.body.permissionId.toString())) {
+        return res.status(400).send({ message: "Invalid user input" })
+    }
+
     User.findOne({
         where: { userId: req.body.userId }
     }).then(user => {
@@ -207,6 +232,13 @@ exports.revokeAccess = (req, res) => {
  */
 exports.updateRole = (req, res) => {
 
+    /**
+     * User input validation
+     */
+    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.role.toString())) {
+        return res.status(400).send({ message: "Invalid user input" })
+    }
+
     const ROLES = ["user", "admin", "mod"];
 
     if (!req.body.role && !req.body.userId) {
@@ -253,6 +285,13 @@ exports.updateRole = (req, res) => {
  * params: userId
  */
 exports.getAllUserDoorsWithAccess = (req, res) => {
+    
+    /**
+     * User validation
+     */
+    if (!validateAlphanumeric(req.body.userId.toString())) {
+        return res.status(400).send({ message: "Invalid user input" })
+    }
 
     Permission.findAll({
         where: { userId: req.body.userId },
@@ -278,6 +317,12 @@ exports.getAllUserDoorsWithAccess = (req, res) => {
  */
 exports.updateInfo = (req, res) => {
 
+    /**
+     * User validation
+     */
+    if (!validateAlphanumeric(req.body.doorId.toString())) {
+        return res.status(400).send({ message: "Invalid user input" })
+    }
     User.findOne({
         where: { userId: req.body.userId }
     }).then(user => {
