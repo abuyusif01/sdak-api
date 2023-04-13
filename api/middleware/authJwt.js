@@ -2,6 +2,12 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/authConfig");
 const { User } = require("../../models");
 
+/**
+ * @params (req, res, next)
+ * 
+ * validate user token, if the token is valid, then proceed to next middleware
+ * 
+ */
 verifyToken = (req, res, next) => {
     let token = req.headers["x-access-token"];
 
@@ -23,7 +29,13 @@ verifyToken = (req, res, next) => {
     });
 };
 
-
+/**
+ * @params (req, res, next)
+ * 
+ * check if the current user role is admin,
+ * we dont check what the user pass, if we do so the user can easily abuse jwt and change the role themselves
+ * so we gonnna be checking the actual user role in the database
+ */
 isAdmin = (req, res, next) => {
     User.findOne({
         where: { userId: req.userId },
@@ -50,6 +62,11 @@ isAdmin = (req, res, next) => {
 };
 
 
+/**
+ * @params (req, res, nexxt)
+ * 
+ * check if the give token have mod role
+ */
 isModerator = (req, res, next) => {
     User.findOne({
         where: { userId: req.userId },
