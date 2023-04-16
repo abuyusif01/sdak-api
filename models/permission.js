@@ -28,12 +28,21 @@ module.exports = (sequelize, DataTypes) => {
                 model: 'Doors',
                 key: 'doorId'
             }
+        },
+        passcodeId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Passcodes',
+                key: 'passcodeId'
+            }
         }
     });
 
     Permission.associate = function (models) {
         Permission.belongsTo(models.User, { as: 'user', foreignKey: 'userId' });
         Permission.belongsTo(models.Door, { as: 'door', foreignKey: 'doorId' });
+        Permission.belongsTo(models.Passcode, { as: 'passcode', foreignKey: 'passcodeId' })
     };
 
     return Permission;

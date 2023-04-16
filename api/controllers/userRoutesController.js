@@ -30,7 +30,7 @@ exports.openDoor = (req, res) => {
      * rule 1. never trust the user
      * we sanitize the input first
      */
-    if (!validateAlphanumeric(req.body.userId.toString(), req.body.doorId.toString())) {
+    if (!validateAlphanumeric(req.body.userId?.toString(), req.body.doorId?.toString())) {
         return res.status(400).send({ message: "Invalid user or door ID", })
     }
 
@@ -39,9 +39,9 @@ exports.openDoor = (req, res) => {
      * Incase the user try to act smart, we tackle this
      * 
     */
-    User.findOne({ where: { userId: req.userId } }).then((user) => {
+    User.findOne({ where: { userId: req.userId } }).then((user) => { 
         if (user.role !== "admin") {
-            if (req.userId.toString() !== req.body.userId) {
+            if (req.userId?.toString() !== req.body.userId?.toString()) {
                 return res.status(403).send({
                     message: "Only admin can do this!",
                     userId: user.userId,
@@ -105,7 +105,7 @@ exports.openDoor = (req, res) => {
  */
 exports.closeDoor = (req, res) => {
 
-    if (!validateAlphanumeric(req.body.userId.toString(), req.body.doorId.toString())) {
+    if (!validateAlphanumeric(req.body.userId?.toString(), req.body.doorId?.toString())) {
         return res.status(400).send({ message: "Invalid user or door ID", })
     }
 
@@ -114,9 +114,9 @@ exports.closeDoor = (req, res) => {
      * Incase the user try to act smart, we tackle this
      * 
     */
-    User.findOne({ where: { userId: req.userId } }).then((user) => {
+    User.findOne({ where: { userId: req.userId } }).then((user) => { 
         if (user.role !== "admin") {
-            if (req.userId.toString() !== req.body.userId) {
+            if (req.userId?.toString() !== req.body.userId?.toString()) {
                 return res.status(403).send({
                     message: "Only admin can do this!",
                     userId: user.userId,
@@ -179,14 +179,19 @@ exports.closeDoor = (req, res) => {
  */
 exports.updateUserInfo = (req, res) => {
 
-    if (!validateAlphanumeric(req.body.email.toString(), req.body.password.toString(), req.body.userId.toString())) {
-        return res.status(400).send({ message: "Invalid userId, email or password", })
+    if (!validateAlphanumeric(req.body.email?.toString(), req.body.password?.toString(), req.body.userId?.toString())) {
+        return res.status(400).send({
+            message: "Invalid userId, email or password",
+            userId: req.body.userId,
+            email: req.body.email,
+            password: req.body.password
+        })
     }
 
-    if (req.userId !== req.body.userId) {
+    if (req.userId.toString() !== req.body.userId.toString()) {
         return res.status(403).send({
-            message: "Invalid user",
-            userId: req.body.userId
+            message: "Invalid user input"
+            
         });
     }
 
@@ -225,11 +230,11 @@ exports.updateUserInfo = (req, res) => {
  */
 exports.getAllDoorsWithAccess = (req, res) => {
 
-    if (!validateAlphanumeric(req.body.userId.toString())) {
+    if (!validateAlphanumeric(req.body.userId?.toString())) {
         return res.status(400).send({ message: "Invalid user input.", })
     }
 
-    if (req.userId !== req.body.userId) {
+    if (req.userId.toString() !== req.body.userId.toString()) {
         return res.status(403).send({
             message: "Invalid user.",
             userId: req.body.userId
@@ -277,11 +282,11 @@ exports.getAllDoorsWithAccess = (req, res) => {
  */
 exports.addDoorWithPasscode = (req, res) => {
 
-    if (!validateAlphanumeric(req.body.userId.toString(), req.body.doorId.toString(), req.body.doorPasscode.toString())) {
+    if (!validateAlphanumeric(req.body.userId?.toString(), req.body.doorId?.toString(), req.body.doorPasscode?.toString())) {
         return res.status(400).send({ message: "Invalid user input.", })
     }
 
-    if (req.userId !== req.body.userId) {
+    if (req.userId.toString() !== req.body.userId.toString()) {
         return res.status(403).send({
             message: "Invalid user.",
             userId: req.body.userId
@@ -320,7 +325,7 @@ exports.addDoorWithPasscode = (req, res) => {
                         doorId: req.body.doorId
                     });
                 }
-              
+
                 Permission.findOne({
                     where: { userId: user.userId, doorId: door.doorId }
                 }).then(permission => {

@@ -10,14 +10,9 @@ module.exports = function (app) {
         next();
     });
 
-    app.post(
-        "/api/register",
-        [
-            verifySignUp.checkDuplicateUsernameOrEmail,
-            verifySignUp.checkRolesExisted
-        ],
-        controller.signup
-    );
+    // register route
+    app.post("/api/register", [verifySignUp.checkDuplicateUsernameOrEmail, verifySignUp.checkRolesExisted], controller.signup);
 
+    //login route
     app.post("/api/login", controller.signin);
 };

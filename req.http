@@ -1,5 +1,6 @@
 @contentType = application/json
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjgxNDEwNDI1LCJleHAiOjE2ODE0OTY4MjV9.j4E8w6KoelT2Awy11-y28MKTMtxcNWVRFv8yTYg36kg
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImlhdCI6MTY4MTY3NTQ2MywiZXhwIjoxNjgxNzYxODYzfQ.lcr1Is1Y0GQMxSgWpENoFVimYBaZyKPZai5sI6zmbwI
+# @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY4MTY3NTk0MiwiZXhwIjoxNjgxNzYyMzQyfQ.6bAAOJ38JK8TWsUtci9FqE5v5vqcKoU_cm5P4SPY1zs
 @userToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjgxMzIzNzA0LCJleHAiOjE2ODE0MTAxMDR9.2dkY_z3SbEXBkBewehVcoxpH438gJFNFfEpXHOgnqh4
 @modToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjgxMTE3NTU2LCJleHAiOjE2ODEyMDM5NTZ9.FWSGOflxivGKLX5jldzZv5dWEdCxml0rKVoGgoFDDx8
 
@@ -47,7 +48,7 @@ POST https://localhost:8081/api/login HTTP/1.1
 Content-Type: {{contentType}}
 
 {
-    "email": "admin@gmail.com",
+    "email": "user@gmail.com",
     "password": "test"
 }
 
@@ -142,8 +143,8 @@ Content-Type: {{contentType}}
 x-access-token: {{token}}
 
 {
-    "userId": 2,
-    "doorId": "1"
+    "userId": "2",
+    "doorId": "100"
 }
 
 
@@ -170,8 +171,8 @@ x-access-token: {{token}}
 
 {
     "userId": 1,
-    "email": "new@test.com",
-    "password": "1234",
+    "email": "admin@gmail.com",
+    "password": "test",
     "role": "admin"
 }
 

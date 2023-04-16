@@ -2,6 +2,7 @@ const { User } = require("../../models");
 const config = require("../config/authConfig");
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const { validateAlphanumeric } = require("./utils/validator");
 
 
 /**
@@ -46,10 +47,12 @@ exports.signup = (req, res) => {
  * route to login a user
  */
 exports.signin = (req, res) => {
+
+    if (!validateAlphanumeric(req.body.email.toString(), req.body.password.toString())) {
+        return res.status(400).send({ message: "Invalid user input", })
+    }
     User.findOne({
-        where: {
-            email: req.body.email
-        }
+        where: { email: req.body.email }
     }).then(user => {
         if (!user) {
             return res.status(404).send({ message: "User Not found." });
@@ -67,12 +70,12 @@ exports.signin = (req, res) => {
             });
         }
 
-        var token = jwt.sign({ id: user.userId }, config.secret, {
+        var token = jwt.sign({ userId: user.userId }, config.secret, {
             expiresIn: 86400 // 24 hours
         });
 
         res.status(200).send({
-            id: user.userId,
+            userId: user.userId,
             role: user.role,
             email: user.email,
             token: token
