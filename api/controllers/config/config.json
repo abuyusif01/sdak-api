@@ -1,5 +1,5 @@
 {
-    "port": 8883,
+    "port": 1883,
     "host": "localhost",
     "rejectUnauthorized": false
 }

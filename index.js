@@ -39,8 +39,8 @@ require('./api/routes/userRoutes')(app);
 
 //https options 
 const httpsOptions = {
-    cert: fs.readFileSync('./ssl/localhost.crt'),
-    key: fs.readFileSync('./ssl/localhost.key')
+    cert: fs.readFileSync('./ssl/localhost.pem'),
+    key: fs.readFileSync('./ssl/localhost-key.pem')
 };
 // create https server
 let server = https.createServer(httpsOptions, app);

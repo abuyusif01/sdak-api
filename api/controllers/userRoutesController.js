@@ -12,7 +12,7 @@ const options = {
 };
 
 // hivemq controller set up 
-const client = mqtt.connect('mqtts://', options);
+const client = mqtt.connect('mqtt://', options);
 
 
 /**
@@ -27,7 +27,6 @@ const client = mqtt.connect('mqtts://', options);
 exports.openDoor = (req, res) => {
 
     /**
-     * rule 1. never trust the user
      * we sanitize the input first
      */
     if (!validateAlphanumeric(req.body.userId?.toString(), req.body.doorId?.toString())) {
@@ -39,7 +38,7 @@ exports.openDoor = (req, res) => {
      * Incase the user try to act smart, we tackle this
      * 
     */
-    User.findOne({ where: { userId: req.userId } }).then((user) => { 
+    User.findOne({ where: { userId: req.userId } }).then((user) => {
         if (user.role !== "admin") {
             if (req.userId?.toString() !== req.body.userId?.toString()) {
                 return res.status(403).send({
@@ -75,6 +74,7 @@ exports.openDoor = (req, res) => {
                     User.findOne({ where: { userId: req.userId } }).then((user) => {
                         if (user.role === "admin") {
                             res.send({ message: "Door is opening" });
+                            client.publish(`door/${door.doorId}`, 'open');
                         }
                         else {
                             if (!permission) {
@@ -86,6 +86,7 @@ exports.openDoor = (req, res) => {
                                 });
                             }
                             res.send({ message: "Door is opening" });
+                            client.publish(`door/${door.doorId}`, 'open');
                         }
                     });
                 });
@@ -114,7 +115,7 @@ exports.closeDoor = (req, res) => {
      * Incase the user try to act smart, we tackle this
      * 
     */
-    User.findOne({ where: { userId: req.userId } }).then((user) => { 
+    User.findOne({ where: { userId: req.userId } }).then((user) => {
         if (user.role !== "admin") {
             if (req.userId?.toString() !== req.body.userId?.toString()) {
                 return res.status(403).send({
@@ -150,6 +151,7 @@ exports.closeDoor = (req, res) => {
                     User.findOne({ where: { userId: req.userId } }).then((user) => {
                         if (user.role === "admin") {
                             res.send({ message: "Door is closing" });
+                            client.publish(`door/${door.doorId}`, 'close');
                         }
                         else {
                             if (!permission) {
@@ -161,6 +163,7 @@ exports.closeDoor = (req, res) => {
                                 });
                             }
                             res.send({ message: "Door is closing" });
+                            client.publish(`door/${door.doorId}`, 'close');
                         }
                     });
                 });
@@ -191,7 +194,7 @@ exports.updateUserInfo = (req, res) => {
     if (req.userId.toString() !== req.body.userId.toString()) {
         return res.status(403).send({
             message: "Invalid user input"
-            
+
         });
     }
 
