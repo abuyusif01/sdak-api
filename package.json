@@ -1,4 +1,16 @@
 {
+  "name": "sdk-api",
+  "version": "0.0.1",
+  "description": "API smartdoor exposed 8081",
+  "author": {
+    "name": "abuyusif01",
+    "email": "abuyusif01@gmail.com"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",

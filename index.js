@@ -1,4 +1,3 @@
-const { User, Door, Permission } = require('./models');
 const bodyParser = require("body-parser");
 const express = require("express");
 const https = require('https');

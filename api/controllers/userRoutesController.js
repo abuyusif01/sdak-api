@@ -1,19 +1,25 @@
-const { port, host, rejectUnauthorized } = require('./config/config.json');
+const fs = require('fs');
+const { port, host, rejectUnauthorized, username, password } = require('./config/config.json');
 const { validateAlphanumeric } = require('./utils/validator')
 const { User, Door, Permission, Passcode } = require("../../models");
 const mqtt = require('mqtt');
 var bcrypt = require("bcryptjs");
-const permission = require('../../models/permission');
 
+
+const caFile = fs.readFileSync(__dirname + '/cert/ca.crt');
 const options = {
+    ca: caFile,
+    rejectUnauthorized: rejectUnauthorized, // make sure the cert is valid
+    username: username,
+    password: password,
     port: port,
     host: host,
-    rejectUnauthorized: rejectUnauthorized,
+    protocol: 'mqtts',
+
 };
 
-// hivemq controller set up 
-const client = mqtt.connect('mqtt://', options);
-
+// mosquitto controller set up 
+const client = mqtt.connect(options);
 
 /**
  * 
@@ -73,7 +79,8 @@ exports.openDoor = (req, res) => {
                 }).then(permission => {
                     User.findOne({ where: { userId: req.userId } }).then((user) => {
                         if (user.role === "admin") {
-                            res.send({ message: "Door is opening" });
+                            // res.send({ message: "Door is opening" });
+                            res.send({ message: "Door is opening id: " + door.doorId });
                             client.publish(`door/${door.doorId}`, 'open');
                         }
                         else {
@@ -85,7 +92,8 @@ exports.openDoor = (req, res) => {
                                     role: user.role
                                 });
                             }
-                            res.send({ message: "Door is opening" });
+                            res.send({ message: "Door is opening id: " + door.doorId });
+
                             client.publish(`door/${door.doorId}`, 'open');
                         }
                     });
@@ -150,7 +158,7 @@ exports.closeDoor = (req, res) => {
                 }).then(permission => {
                     User.findOne({ where: { userId: req.userId } }).then((user) => {
                         if (user.role === "admin") {
-                            res.send({ message: "Door is closing" });
+                            res.send({ message: "Door is closing id: " + door.doorId });
                             client.publish(`door/${door.doorId}`, 'close');
                         }
                         else {
@@ -162,7 +170,7 @@ exports.closeDoor = (req, res) => {
                                     role: user.role
                                 });
                             }
-                            res.send({ message: "Door is closing" });
+                            res.send({ message: "Door is closing id: " + door.doorId });
                             client.publish(`door/${door.doorId}`, 'close');
                         }
                     });
