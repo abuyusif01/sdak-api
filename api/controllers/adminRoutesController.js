@@ -33,7 +33,7 @@ exports.addDoor = (req, res) => {
     /**
      * User input validation
      */
-    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.doorId.toString(), req.body.doorLocation.toString())) {
+    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.doorLocation.toString(), req.body.doorName.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -362,6 +362,7 @@ exports.updateInfo = (req, res) => {
  * @description API Controller to add a passcode to a door (only admin can access this route)
  * 
  * params: doorId, doorPasscode
+ * TODO: take start/end Time and Date from the admin
  * 
  * @returns doorId, doorPasscode
  * 

@@ -290,14 +290,16 @@ exports.getAllDoorsWithAccess = (req, res) => {
  * @description API controller to add door to the permission table for the user by providing valid passcode
  * first we check if the user exist, then we check if the door exist, then we check if the passcode is valid
  * if all are true, we add the door to the permission table
+ * refactor this function now we dont need doorId, we gonna extract it from the passcode table
+ * since each passcode have a doorId
  */
 exports.addDoorWithPasscode = (req, res) => {
 
-    if (!validateAlphanumeric(req.body.userId?.toString(), req.body.doorId?.toString(), req.body.doorPasscode?.toString())) {
+    if (!validateAlphanumeric(req.body.userId?.toString(), req.body.doorPasscode?.toString())) {
         return res.status(400).send({ message: "Invalid user input.", })
     }
 
-    if (req.userId.toString() !== req.body.userId.toString()) {
+    if (req.userId?.toString() !== req.body.userId?.toString()) {
         return res.status(403).send({
             message: "Invalid user.",
             userId: req.body.userId
@@ -313,49 +315,34 @@ exports.addDoorWithPasscode = (req, res) => {
                 userId: req.body.userId
             });
         }
-        Door.findOne({
-            where: { doorId: req.body.doorId }
-        }).then(door => {
 
-            if (!door) {
-                return res.status(404).send({
-                    message: "Door Not found.",
-                    doorId: req.body.doorId
-                });
+        Passcode.findOne({
+            where: {
+                doorPasscode: req.body.doorPasscode
+            }
+        }).then(passcode => {
+            if (!passcode) {
+                return res.status(404).send({ message: "Passcode Not valid." });
             }
 
-            Passcode.findOne({
-                where: {
-                    doorId: door.doorId,
-                    doorPasscode: req.body.doorPasscode
-                }
-            }).then(passcode => {
-                if (!passcode) {
+            Permission.findOne({
+                where: { userId: user.userId, doorId: passcode.doorId }
+            }).then(permission => {
+                if (permission) {
                     return res.status(404).send({
-                        message: "Passcode Not valid.",
-                        doorId: req.body.doorId
+                        message: "Permission already exist.",
+                        userId: user.userId,
                     });
                 }
-
-                Permission.findOne({
-                    where: { userId: user.userId, doorId: door.doorId }
-                }).then(permission => {
-                    if (permission) {
-                        return res.status(404).send({
-                            message: "Permission already exist.",
-                            userId: user.userId,
-                            doorId: door.doorId
-                        });
-                    }
-                    Permission.create({
+                Permission.create({
+                    userId: user.userId,
+                    doorId: passcode.doorId,
+                    passcodeId: passcode.passcodeId
+                }).then(() => {
+                    res.send({
+                        message: "Door added successfully!",
                         userId: user.userId,
-                        doorId: door.doorId
-                    }).then(() => {
-                        res.send({
-                            message: "Door added successfully!",
-                            userId: user.userId,
-                            doorId: door.doorId
-                        });
+                        doorId: passcode.doorId
                     });
                 });
             });
