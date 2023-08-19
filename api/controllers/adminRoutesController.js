@@ -33,7 +33,7 @@ exports.addDoor = (req, res) => {
     /**
      * User input validation
      */
-    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.doorLocation.toString(), req.body.doorName.toString())) {
+    if (!validateAlphanumeric(req.body.doorId?.toString(), req.body.doorLocation.toString(), req.body.doorName.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -76,7 +76,7 @@ exports.removeDoor = (req, res) => {
     /**
      * This act like a middleware, we make sure the input is sanitize to avoid SQLi
      */
-    if (!validateAlphanumeric(req.body.doorId.toString())) {
+    if (!validateAlphanumeric(req.body.doorId?.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -115,7 +115,7 @@ exports.removeDoor = (req, res) => {
  */
 exports.giveAccess = (req, res) => {
 
-    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.userId.toString())) {
+    if (!validateAlphanumeric(req.body.doorId?.toString(), req.body.userId?.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -182,7 +182,7 @@ exports.revokeAccess = (req, res) => {
      * Validate user input
      * forcing a toString method will insure everything will be treated as a string
      */
-    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.userId.toString())) {
+    if (!validateAlphanumeric(req.body.doorId?.toString(), req.body.userId?.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -238,7 +238,7 @@ exports.updateRole = (req, res) => {
     /**
      * User input validation
      */
-    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.role.toString())) {
+    if (!validateAlphanumeric(req.body.doorId?.toString(), req.body.role?.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -292,7 +292,7 @@ exports.getAllUserDoorsWithAccess = (req, res) => {
     /**
      * User validation
      */
-    if (!validateAlphanumeric(req.body.userId.toString())) {
+    if (!validateAlphanumeric(req.body.userId?.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -323,7 +323,7 @@ exports.updateInfo = (req, res) => {
     /**
      * User validation
      */
-    if (!validateAlphanumeric(req.body.userId.toString(), req.body.email.toString(), req.body.password.toString(), req.body.role.toString())) {
+    if (!validateAlphanumeric(req.body.userId?.toString(), req.body.email.toString(), req.body.password?.toString(), req.body.role?.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -372,7 +372,7 @@ exports.addDoorPasscode = (req, res) => {
     /**
      * User validation
      */
-    if (!validateAlphanumeric(req.body.doorId.toString(), req.body.doorPasscode.toString())) {
+    if (!validateAlphanumeric(req.body.doorId?.toString(), req.body.doorPasscode.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -424,7 +424,7 @@ exports.revokeDoorPasscode = (req, res) => {
     /**
      * User validation
      */
-    if (!validateAlphanumeric(req.body.doorId.toString())) {
+    if (!validateAlphanumeric(req.body.doorId?.toString())) {
         return res.status(400).send({ message: "Invalid user input" })
     }
 
@@ -452,6 +452,40 @@ exports.revokeDoorPasscode = (req, res) => {
                     message: "Passcode revoked successfully!",
                     doorId: door.doorId
                 });
+            });
+        });
+    });
+}
+
+
+exports.getDoorPin = (req, res) => {
+    if (!validateAlphanumeric(req.body.doorId?.toString())) {
+        return res.status(400).send({ message: "Invalid user input" })
+    }
+
+    Door.findOne({
+        where: { doorId: req.body.doorId }
+    }).then(door => {
+        if (!door) {
+            return res.status(404).send({
+                message: "Door Not found.",
+                doorId: req.body.doorId
+            });
+        }
+
+        Passcode.findOne({
+            where: { doorId: door.doorId }
+        }).then(passcode => {
+            if (!passcode) {
+                return res.status(400).send({
+                    message: "Door doesn't have a passcode.",
+                    doorId: door.doorId
+                });
+            }
+            res.send({
+                message: "Passcode retrieved successfully!",
+                doorId: door.doorId,
+                doorPasscode: passcode.doorPasscode
             });
         });
     });

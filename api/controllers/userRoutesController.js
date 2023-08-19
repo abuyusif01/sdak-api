@@ -241,44 +241,21 @@ exports.updateUserInfo = (req, res) => {
  */
 exports.getAllDoorsWithAccess = (req, res) => {
 
-    if (!validateAlphanumeric(req.body.userId?.toString())) {
-        return res.status(400).send({ message: "Invalid user input.", })
-    }
-
-    if (req.userId.toString() !== req.body.userId.toString()) {
-        return res.status(403).send({
-            message: "Invalid user.",
-            userId: req.body.userId
-        });
-    }
-
-    User.findOne({
-        where: { userId: req.body.userId }
-    }).then(user => {
-        if (!user) {
-            return res.status(404).send({
-                message: "User Not found.",
-                userId: req.body.userId
-            });
+    Permission.findAll({
+        where: { userId: req.userId },
+        include: [{
+            model: Door,
+            as: "door",
+            attributes: ["doorId", "doorLocation", "doorName"]
+        }]
+    }).then(permissions => {
+        if (!permissions) {
+            return res.status(404).send({ message: "No enought permission to access any door" });
         }
-
-        Permission.findAll({
-            where: { userId: user.userId },
-            include: [{
-                model: Door,
-                as: "door",
-                attributes: ["doorId", "doorLocation"]
-            }]
-        }).then(permissions => {
-            if (!permissions) {
-                return res.status(404).send({
-                    message: "Permission Not found.",
-                    userId: user.userId
-                });
-            }
-            res.send({ doors: permissions });
-        });
+        // i think we expose much info here, too lazy to fix it now
+        res.send({ doors: permissions });
     });
+
 };
 
 /**

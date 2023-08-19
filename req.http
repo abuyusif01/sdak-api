@@ -1,6 +1,6 @@
 @contentType = application/json
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTY4ODEzNzMyOSwiZXhwIjoxNjg4MjIzNzI5fQ.nTKwA-54DjKCtsnxzVAyMZ2QbC9sqFdnMaOi9y6iK1U
-# @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY4MTY3NTk0MiwiZXhwIjoxNjgxNzYyMzQyfQ.6bAAOJ38JK8TWsUtci9FqE5v5vqcKoU_cm5P4SPY1zs
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY5MTc2MjMxNiwiZXhwIjoxNjkxODQ4NzE2fQ.-LoNEaZLPgLAuzKX9Qen97FVU4sCjCLq6x9mTjkZlwY
+# @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTY5MTU1OTM0NiwiZXhwIjoxNjkxNjQ1NzQ2fQ.REyKAbfrZc7CV1UImxOgaYbToX--65kmHctkoWbIPy4
 @userToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjgxMzIzNzA0LCJleHAiOjE2ODE0MTAxMDR9.2dkY_z3SbEXBkBewehVcoxpH438gJFNFfEpXHOgnqh4
 @modToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjgxMTE3NTU2LCJleHAiOjE2ODEyMDM5NTZ9.FWSGOflxivGKLX5jldzZv5dWEdCxml0rKVoGgoFDDx8
 
@@ -9,9 +9,9 @@ POST https://localhost:8081/api/register HTTP/1.1
 Content-Type: {{contentType}}
 
 {
-    "email": "user3@user.com",
-    "password": "password3",
-    "role": "user"
+    "email": "admin@gmail.com",
+    "password": "password",
+    "role": ""
 }
 
 ###
@@ -48,10 +48,20 @@ POST https://localhost:8081/api/login HTTP/1.1
 Content-Type: {{contentType}}
 
 {
+    "email": "admin@gmail.com",
+    "password": "password"
+}
+###
+
+
+# login user
+POST https://localhost:8081/api/login HTTP/1.1
+Content-Type: {{contentType}}
+
+{
     "email": "user2@user.com",
     "password": "password2"
 }
-
 ###
 
 # test user permission
@@ -186,9 +196,6 @@ GET https://localhost:8081/api/getAllDoorsWithAccess HTTP/1.1
 Content-Type: {{contentType}}
 x-access-token: {{token}}
 
-{
-    "userId": 1
-}
 
 
 ###
@@ -259,3 +266,29 @@ x-access-token: {{token}}
     "doorPasscode": "567890"
 }
 
+###
+
+GET https://localhost:8081/api/getAllDoorsWithAccess  HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+###
+
+GET https://localhost:8081/api/getAllDoors  HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+
+
+1. if the user is admin, show all the doors
+
+
+###
+
+GET https://localhost:8081/api/getDoorPin  HTTP/1.1
+Content-Type: {{contentType}}
+x-access-token: {{token}}
+
+{
+    "doorId": 3
+}

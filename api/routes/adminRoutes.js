@@ -43,4 +43,7 @@ module.exports = function (app) {
     // remove doorPasscode
     app.post("/api/revokeDoorPasscode", [authJwt.verifyToken, authJwt.isAdmin], controller.revokeDoorPasscode);
 
+    // get door pin codes
+    app.get("/api/getDoorPin", [authJwt.verifyToken, authJwt.isAdmin], controller.getDoorPin);
+
 }
